@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QHack 2026 – Learn Quantum Coding with PennyLane</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&family=JetBrains+Mono:wght@400;500&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#140f2e;--pn:#1e1745;--ln:#3a2f6e;--fg:#f0ecff;--mu:#aaa2d6;--ac:#ffcf5c;--c2:#6fe3ff;--c3:#ff7ab8;--ok:#7be0a4;--bd:#ff7a7a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f7f4ff;--pn:#fff;--ln:#d6cdf2;--fg:#1d1442;--mu:#5d5390;--ac:#9a5d00;--c2:#006e96;--c3:#c2185b;--ok:#13794a;--bd:#c62828}}
+:root[data-theme="light"]{--bg:#f7f4ff;--pn:#fff;--ln:#d6cdf2;--fg:#1d1442;--mu:#5d5390;--ac:#9a5d00;--c2:#006e96;--c3:#c2185b;--ok:#13794a;--bd:#c62828}
+:root[data-theme="dark"]{--bg:#140f2e;--pn:#1e1745;--ln:#3a2f6e;--fg:#f0ecff;--mu:#aaa2d6;--ac:#ffcf5c;--c2:#6fe3ff;--c3:#ff7ab8;--ok:#7be0a4;--bd:#ff7a7a}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);scroll-behavior:smooth}
+*{box-sizing:border-box}body{margin:0;background:var(--bgi,var(--bg)) fixed;color:var(--fg);font:16px/1.65 Nunito,system-ui,sans-serif}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;margin:0}code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+header{max-width:1100px;margin:auto;padding:52px 20px 28px}
+h1{font-size:clamp(30px,6vw,58px);line-height:1.08;font-weight:800;letter-spacing:-.02em}
+header p{color:var(--mu);font-size:18px;max-width:64ch}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0}
+.fact{border:1px solid var(--ln);border-radius:10px;padding:12px 14px;background:var(--pn)}
+.fact b{display:block;font:800 22px Sora,sans-serif;color:var(--ac)}.fact span{color:var(--mu);font-size:14px}
+#cd{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+#cd div{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:8px 14px;text-align:center;min-width:72px}
+#cd b{font:800 28px Sora,sans-serif;color:var(--c2);display:block}
+.cta{display:inline-block;background:var(--ab,var(--ac));color:var(--on,#1d1442);text-decoration:none;font-weight:600;padding:10px 20px;border-radius:8px;margin:6px 10px 0 0}
+.cta.g{background:transparent;color:var(--fg);border:1px solid var(--ln)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);border-bottom:1px solid var(--ln);display:flex;gap:6px;overflow-x:auto;padding:10px 16px}
+nav a{flex:none;color:var(--fg);text-decoration:none;border:1px solid var(--ln);border-radius:6px;padding:4px 12px;font-size:14px}
+nav a:hover,nav a:focus-visible{border-color:var(--ac);color:var(--ac);outline:none}
+main{max-width:1100px;margin:auto;padding:0 20px 50px}
+.mod{padding:42px 0;border-bottom:1px solid var(--ln)}
+.mh{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:16px}
+.mn{font:500 14px "JetBrains Mono",monospace;color:var(--c2);border:1px solid var(--c2);padding:2px 10px;border-radius:4px}
+h2{font-size:clamp(22px,4vw,34px);font-weight:800}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:26px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+h3{font-size:17px;margin:14px 0 6px}ul{padding-left:20px;margin:0}li{margin:5px 0}
+pre{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:12px;overflow-x:auto;font-size:12.5px;line-height:1.5;margin:6px 0;color:var(--c2)}
+.tip{border-left:3px solid var(--c3);padding:6px 12px;color:var(--mu);margin-top:12px;font-size:15px}
+.sim{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:16px;min-width:0}
+.st{font-weight:600;margin-bottom:8px;color:var(--ac)}
+button{font:inherit;font-size:14px;background:var(--ab,var(--ac));color:var(--on,#1d1442);border:0;border-radius:6px;padding:6px 13px;cursor:pointer;margin:6px 6px 0 0}
+button.g{background:transparent;color:var(--fg);border:1px solid var(--ln)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--c2);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.note{color:var(--mu);font-size:14px;min-height:42px;margin:8px 0 0}
+svg{max-width:100%;height:auto}svg text{fill:var(--fg);font:11px "JetBrains Mono",monospace}
+.bar{display:flex;align-items:center;gap:8px;margin:5px 0;font:12.5px "JetBrains Mono",monospace}
+.bar i{display:block;height:16px;border-radius:3px;background:var(--c2);transition:width .5s}
+.cl{display:block;width:100%;text-align:left;font:12.5px "JetBrains Mono",monospace;background:var(--bg);color:var(--fg);border:1px solid var(--ln);margin:3px 0;padding:5px 9px}
+.cl.on{border-color:var(--ac);color:var(--ac)}
+label.ck{display:flex;gap:10px;align-items:flex-start;margin:7px 0;cursor:pointer}
+.pb{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:8px 0;border:1px solid var(--ln)}.pb i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+footer{max-width:1100px;margin:auto;padding:24px 20px 60px;color:var(--mu);font-size:14px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+:root[data-theme="hole"]{--bg:#050507;--pn:#0d0a0eE6;--ln:#4a3320;--fg:#fff1e0;--mu:#c9a98a;--ac:#ffb347;--c2:#ffd9a0;--c3:#ff7a2f;--ok:#ffe08a;--bd:#ff5a3c}
+:root[data-theme="nova"]{--bg:#170604;--pn:#2a0e08E6;--ln:#6b2a12;--fg:#fff0e0;--mu:#e0a888;--ac:#ffcc33;--c2:#ff9a3c;--c3:#ff5a3b;--ok:#ffd86b;--bd:#ff3b30}
+:root[data-theme="aurora"]{--bg:#04141a;--pn:#082a30E6;--ln:#1c5a55;--fg:#e8fff6;--mu:#8fd1bf;--ac:#5dffb0;--c2:#3fe0d0;--c3:#9affd8;--ok:#7dffb2;--bd:#ff8a8a}
+:root[data-theme="neon"]{--bg:#0a0614;--pn:#150a2aE6;--ln:#5a1a6a;--fg:#fff0ff;--mu:#c9a0e8;--ac:#ff3df2;--c2:#20f0ff;--c3:#ff8af7;--ok:#20ffa0;--bd:#ff4d6d;--on:#fff}
+:root[data-theme="ocean"]{--bg:#02101f;--pn:#06243cE6;--ln:#134a73;--fg:#e6f6ff;--mu:#86b9d6;--ac:#4ad8ff;--c2:#3af0c8;--c3:#8fb4ff;--ok:#5af0b0;--bd:#ff8c8c}
+:root[data-theme="retro"]{--bg:#2a0b4a;--bgi:linear-gradient(180deg,#2a0b4a 0%,#6b1d6e 55%,#c2417a 100%);--pn:#3a1160E6;--ln:#9a3a8a;--fg:#fff0f5;--mu:#f4b8d4;--ac:#ffa24d;--c2:#ff7fb0;--c3:#d2a6ff;--ok:#ffd36b;--bd:#ff6b6b}
+:root[data-theme="light"]{--bg:#ffffff;--pn:#fffffff2;--ln:#e0e0e8;--fg:#1c1b22;--mu:#585668;--ac:#8a4b00;--c2:#0b6a8f;--c3:#b3245f;--ok:#13794a;--bd:#c62828;--ab:#1c1b22;--on:#fff}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.grid>div:first-child{background:color-mix(in srgb,var(--bg) 70%,transparent);padding:2px 14px 10px;border-radius:12px}
+nav{background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px)}
+button.on{background:var(--ab,var(--ac));color:var(--on,#1d1442);border-color:transparent}
+#fab{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:20;padding:10px 16px;border-radius:24px;box-shadow:0 4px 16px #0006}
+#pnl{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 64px);z-index:20;width:min(330px,calc(100vw - 28px));max-height:68vh;overflow:auto;background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:6px 14px 12px;box-shadow:0 8px 28px #0007}
+#pnl[hidden]{display:none}#pnl h3{margin:10px 0 2px}#pnl label{font-size:14px;color:var(--mu)}
+.cl.qo{font:15px Nunito,system-ui,sans-serif}.cl.ok{border-color:var(--ok);color:var(--ok)}.cl.no{border-color:var(--bd);color:var(--bd)}
+
+</style></head><body>
+<header>
+<h1>QHack 2026:<br>Learn Quantum Coding from Zero</h1>
+<p>A free 10-module crash course with 8 themes, background music and a final quiz. with notes, PennyLane code and live simulations. Built for beginners who want to compete in QHack, the quantum coding championship by Xanadu.</p>
+<div class="facts">
+<div class="fact"><b>16–23 Oct 2026</b><span>Starts 16 Oct, 7:30 PM IST (10:00 AM ET)</span></div>
+<div class="fact"><b>USD 67,000</b><span>Prize pool. 1st place $15,000</span></div>
+<div class="fact"><b>Free to join</b><span>Solo or team, register on qhack.ai</span></div>
+<div class="fact"><b>Top 10 win cash</b><span>Challenges cover algorithms, chemistry, applications and PennyLane basics</span></div>
+</div>
+<div class="facts"><div class="fact"><b>$67,000 ≈ ₹64.7 lakh</b><span>Total prize pool</span></div><div class="fact"><b>1st: $15,000 ≈ ₹14.5 lakh</b><span>Grand prize</span></div><div class="fact"><b>2nd: $13,000 ≈ ₹12.5 lakh</b><span>Runner-up</span></div><div class="fact"><b>3rd: $11,000 ≈ ₹10.6 lakh</b><span>Third place</span></div></div><p style="font-size:14px;color:var(--mu)">Rupee values are approximate, at about ₹96.5 per US dollar. The real amount depends on the exchange rate on the payout date.</p>
+<div id="cd" aria-live="off"></div>
+<a class="cta" href="https://qhack.ai" target="_blank" rel="noopener">Register on qhack.ai</a><a class="cta g" href="https://pennylane.ai/challenges" target="_blank" rel="noopener">Practice challenges</a>
+</header>
+<nav id="nav" aria-label="Modules"></nav>
+<main id="mods"></main>
+<footer>Simulations here are simplified teaching tools running in your browser. Always confirm dates and rules on the official QHack site.</footer>
+<script>
+const $=id=>document.getElementById(id);const T=(a,b)=>Math.round(a*b)/b;
+/* countdown to 16 Oct 2026 10:00 ET = 14:00 UTC */
+const tgt=Date.UTC(2026,9,16,14,0,0);
+const tick=()=>{let s=Math.max(0,Math.floor((tgt-Date.now())/1e3));const v=[["days",86400],["hours",3600],["min",60],["sec",1]].map(([n,m])=>{const x=Math.floor(s/m);s-=x*m;return `<div><b>${String(x).padStart(2,"0")}</b>${n}</div>`});$("cd").innerHTML=v.join("")};tick();setInterval(tick,1000);
+const M=[
+["Qubits &amp; the Bloch Sphere","Bloch sphere",["A bit is 0 or 1. A qubit is a state a|0⟩ + b|1⟩ with |a|² + |b|² = 1.","Every single-qubit state is a point on a sphere (the Bloch sphere). North pole = |0⟩, south pole = |1⟩.","A quantum gate is a rotation of that point. X flips, Z turns around the vertical axis, H moves |0⟩ to the equator.","P(0) = (1 + z)/2, where z is the height of the point."],"import numpy as np\nket0 = np.array([1, 0])\nH = np.array([[1, 1], [1, -1]]) / np.sqrt(2)\nprint(H @ ket0)   # [0.707 0.707]","Before PennyLane, learn numpy: vectors are states, matrices are gates."],
+["Superposition &amp; Measurement","Shots histogram",["Measuring a qubit gives only 0 or 1, never the in-between.","The probabilities come from squares of amplitudes (Born rule).","One run is random. Many runs (shots) reveal the probabilities.","Rotation RY(θ) gives P(0) = cos²(θ/2)."],"dev = qml.device('default.qubit', wires=1, shots=1000)\n@qml.qnode(dev)\ndef coin():\n    qml.Hadamard(wires=0)\n    return qml.counts()\nprint(coin())   # {'0': ~500, '1': ~500}","On a simulator, shots=None gives exact probabilities. On hardware you always have shots."],
+["Gates, Circuits &amp; Entanglement","Circuit builder",["Common gates: X (NOT), H (superposition), Z (phase), CNOT (two-qubit control).","H on qubit 0 then CNOT(0,1) makes a Bell state: only 00 and 11 appear.","Entangled means you cannot write the state as qubit A times qubit B.","GHZ state: add CNOT(1,2) for three qubits."],"@qml.qnode(qml.device('default.qubit', wires=2))\ndef bell():\n    qml.Hadamard(wires=0)\n    qml.CNOT(wires=[0, 1])\n    return qml.probs(wires=[0, 1])","Try it: click H on q0, then CNOT 0→1 and watch the label change to Entangled."],
+["PennyLane Anatomy","Code explorer",["Device = the simulator or hardware.","QNode = a Python function that runs a quantum circuit.","Measurements: probs, expval, state, sample, counts.","qml.draw(circuit)() prints the circuit as text."],"pip install pennylane\nimport pennylane as qml\nprint(qml.draw(bell)())","Click each line in the simulation to read what it does."],
+["Parametrized Circuits &amp; Expectation Values","Cost curve",["Gates like RX(θ), RY(θ), RZ(θ) take an angle: this is a knob you can tune.","⟨Z⟩ is the average outcome of measuring with +1 for 0 and −1 for 1.","For RX(θ) on |0⟩: ⟨Z⟩ = cos θ.","The circuit output becomes a function of θ: a cost function."],"@qml.qnode(dev)\ndef f(theta):\n    qml.RX(theta, wires=0)\n    return qml.expval(qml.PauliZ(0))\nf(0.0)      # 1.0\nf(np.pi)    # -1.0","Most QHack problems are about building circuits that return the right expectation values."],
+["Optimization &amp; Gradients","Gradient descent",["Goal: find θ that makes the cost smallest.","Gradient descent: θ ← θ − η · dC/dθ.","On quantum hardware, gradients come from the parameter-shift rule: C′(θ) = [C(θ+π/2) − C(θ−π/2)] / 2.","Learning rate too big overshoots, too small is slow."],"from pennylane import numpy as pnp\nopt = qml.GradientDescentOptimizer(stepsize=0.4)\ntheta = pnp.array(1.0, requires_grad=True)\nfor _ in range(30):\n    theta = opt.step(f, theta)","Use pnp (PennyLane numpy) with requires_grad=True so PennyLane can differentiate."],
+["Quantum Algorithms: Grover Search","Grover amplitudes",["Search N items in about √N steps, not N.","Step 1, oracle: flip the sign of the marked item.","Step 2, diffusion: reflect all amplitudes around their mean.","For N = 8, about 2 repetitions give about 94.5% success. More can make it worse."],"@qml.qnode(qml.device('default.qubit', wires=3))\ndef grover():\n    for w in range(3): qml.Hadamard(w)\n    for _ in range(2):\n        qml.FlipSign([1, 0, 1], wires=range(3))\n        qml.GroverOperator(wires=range(3))\n    return qml.probs(wires=range(3))","Other algorithms to study: Deutsch-Jozsa, QFT, phase estimation."],
+["Quantum Chemistry &amp; VQE","VQE energy landscape",["Molecules are described by a Hamiltonian H. Lowest eigenvalue = ground-state energy.","VQE: prepare a trial state with parameter θ, measure ⟨H⟩, let a classical optimizer lower it.","For H₂ one DoubleExcitation gate is enough.","Chemistry challenges mix qml.qchem with the optimizer from Module 6."],"symbols = ['H', 'H']\ncoords = pnp.array([0, 0, -0.7, 0, 0, 0.7])  # Bohr\nH, qubits = qml.qchem.molecular_hamiltonian(symbols, coords)\nhf = qml.qchem.hf_state(2, qubits)\n@qml.qnode(qml.device('default.qubit', wires=qubits))\ndef energy(theta):\n    qml.BasisState(hf, wires=range(qubits))\n    qml.DoubleExcitation(theta, wires=[0, 1, 2, 3])\n    return qml.expval(H)","The curve here is a stylized teaching model. Real energies come from your PennyLane run."],
+["QHack Strategy &amp; Practice Plan","Prep checklist",["Register first, then do the free master classes and notebooks.","Solve easy challenges fast, bank the points, then attempt harder ones.","Read the grader rules: output format and tolerance matter.","Teams: split topics (algorithms, chemistry, applications) and share code early.","Practice on pennylane.ai/challenges and the PennyLane Codebook."],"# Debug checklist\nprint(qml.draw(circuit)(params))   # is the circuit what you meant?\nassert abs(result - expected) < 1e-4   # tolerance","Quality beats speed: a correct simple circuit wins over a clever broken one."],
+["Final Quiz","Knowledge quiz",["12 questions covering every module and the QHack 2026 facts.","You get instant feedback and a short explanation after each answer.","Score 80% or more to be ready for the challenges.","Retake the quiz as often as you like."],"pip install --upgrade pennylane\nimport pennylane as qml\nprint(qml.version())","Read every explanation. Each one is a mini lesson."]];
+$("nav").innerHTML=M.map((m,i)=>`<a href="#m${i+1}">Module ${i+1}</a>`).join("");
+$("mods").innerHTML=M.map((m,i)=>`<section class="mod" id="m${i+1}"><div class="mh"><span class="mn">Module ${i+1}</span><h2>${m[0]}</h2></div><div class="grid"><div><h3>Notes</h3><ul>${m[2].map(x=>`<li>${x}</li>`).join("")}</ul><h3>PennyLane / Python</h3><pre>${m[3].replace(/&/g,"&amp;").replace(/</g,"&lt;")}</pre><div class="tip">${m[4]}</div></div><div class="sim"><div class="st">Simulation: ${m[1]}</div><div id="s${i+1}"></div></div></div></section>`).join("");
+const S=[];
+
+/* 1 Bloch sphere */
+S[1]=el=>{
+ let v=[0,0,1],busy=0;const P=([x,y,z])=>[130+100*(.92*y-.38*x),130-100*(.92*z-.25*x)];
+ el.innerHTML=`<svg viewBox="0 0 260 260" width="260" role="img" aria-label="Bloch sphere"><circle cx="130" cy="130" r="100" fill="none" stroke="var(--ln)" stroke-width="2"/><ellipse cx="130" cy="130" rx="100" ry="25" fill="none" stroke="var(--ln)" stroke-dasharray="3 4"/><line x1="130" y1="30" x2="130" y2="230" stroke="var(--ln)"/><text x="136" y="26">|0⟩</text><text x="136" y="246">|1⟩</text><text x="232" y="125">y</text><text x="70" y="168">x</text><line id="ar" x1="130" y1="130" x2="130" y2="30" stroke="var(--ac)" stroke-width="3"/><circle id="pt" cx="130" cy="30" r="6" fill="var(--ac)"/></svg><div>${["X","Y","Z","H","S","T"].map(g=>`<button data-g="${g}">${g}</button>`).join("")}<button class="g" id="r1">Reset |0⟩</button></div><p class="note" id="n1"></p>`;
+ const draw=()=>{const p=P(v);$("ar").setAttribute("x2",p[0]);$("ar").setAttribute("y2",p[1]);$("pt").setAttribute("cx",p[0]);$("pt").setAttribute("cy",p[1]);$("n1").innerHTML=`Bloch vector (x,y,z) = (${v.map(a=>T(a,100)+0).join(", ")})<br>P(0) = ${T((1+v[2])/2*100,10)}% , P(1) = ${T((1-v[2])/2*100,10)}%`};
+ const rot=(k,a)=>{const c=Math.cos(a),s=Math.sin(a),d=k[0]*v[0]+k[1]*v[1]+k[2]*v[2],cr=[k[1]*v[2]-k[2]*v[1],k[2]*v[0]-k[0]*v[2],k[0]*v[1]-k[1]*v[0]];v=v.map((x,i)=>x*c+cr[i]*s+k[i]*d*(1-c))};
+ const G={X:[[1,0,0],Math.PI],Y:[[0,1,0],Math.PI],Z:[[0,0,1],Math.PI],H:[[.7071,0,.7071],Math.PI],S:[[0,0,1],Math.PI/2],T:[[0,0,1],Math.PI/4]};
+ el.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{if(busy)return;busy=1;const [k,a]=G[b.dataset.g];let i=0;const iv=setInterval(()=>{rot(k,a/20);draw();if(++i==20){clearInterval(iv);busy=0}},25)});
+ $("r1").onclick=()=>{v=[0,0,1];draw()};draw();
+};
+
+/* 2 Shots histogram */
+S[2]=el=>{
+ el.innerHTML=`<label>RY angle θ = <b id="tv">1.57</b> rad</label><input type="range" id="th" min="0" max="3.1416" step=".01" value="1.5708"><div class="bar"><span>|0⟩</span><i id="h0" style="width:0"></i><span id="c0"></span></div><div class="bar"><span>|1⟩</span><i id="h1" style="width:0"></i><span id="c1"></span></div><button id="a2">Run 1000 shots</button><button class="g" id="b2">Run 1 shot</button><p class="note" id="n2"></p>`;
+ let n0=0,n1=0;const p=()=>Math.cos(+$("th").value/2)**2;
+ const show=()=>{const t=n0+n1||1;$("h0").style.width=n0/t*100+"%";$("h1").style.width=n1/t*100+"%";$("c0").textContent=n0;$("c1").textContent=n1;$("n2").textContent=`Theory: P(0) = cos²(θ/2) = ${T(p()*100,10)}%. Measured: ${T(n0/t*100,10)}% after ${n0+n1} shots.`};
+ $("th").oninput=()=>{$("tv").textContent=$("th").value;n0=n1=0;show()};
+ $("b2").onclick=()=>{Math.random()<p()?n0++:n1++;show()};
+ $("a2").onclick=()=>{n0=n1=0;let i=0;const iv=setInterval(()=>{for(let j=0;j<50;j++)Math.random()<p()?n0++:n1++;show();if(++i==20)clearInterval(iv)},60)};show();
+};
+
+/* 3 Circuit builder (2 qubits) */
+S[3]=el=>{
+ let a,ops;const rs=()=>{a=[1,0,0,0];ops=[]};rs();
+ const one=(q,f)=>{for(let i=0;i<4;i++){const bit=q==0?2:1;if(!(i&bit)){const j=i|bit,x=a[i],y=a[j];[a[i],a[j]]=f(x,y)}}};
+ const B={H:[q=>one(q,(x,y)=>[(x+y)*.7071,(x-y)*.7071]),"qml.Hadamard"],X:[q=>one(q,(x,y)=>[y,x]),"qml.PauliX"],Z:[q=>one(q,(x,y)=>[x,-y]),"qml.PauliZ"]};
+ const cn=(c,t)=>{const cb=c==0?2:1,tb=t==0?2:1;for(let i=0;i<4;i++)if((i&cb)&&!(i&tb)){const j=i|tb;[a[i],a[j]]=[a[j],a[i]]}};
+ el.innerHTML=`<div>${["H","X","Z"].map(g=>[0,1].map(q=>`<button data-g="${g}${q}">${g} on q${q}</button>`).join("")).join("")}<button data-g="C01">CNOT 0→1</button><button data-g="C10">CNOT 1→0</button><button class="g" id="r3">Reset</button></div><div id="bars" style="margin-top:8px"></div><p class="note" id="n3"></p><pre id="co" style="color:var(--fg)"></pre>`;
+ const draw=()=>{const L=["00","01","10","11"];$("bars").innerHTML=a.map((x,i)=>`<div class="bar"><span>|${L[i]}⟩</span><i style="width:${x*x*70}%"></i><span>amp ${T(x,1000)+0}</span></div>`).join("");const ent=Math.abs(a[0]*a[3]-a[1]*a[2])>1e-6;$("n3").innerHTML=ent?'<b style="color:var(--c3)">Entangled!</b> The two qubits cannot be described separately.':"Not entangled (a product state).";$("co").textContent="@qml.qnode(dev)\ndef circuit():\n"+(ops.length?ops.map(o=>"    "+o).join("\n"):"    pass")+"\n    return qml.probs(wires=[0, 1])"};
+ el.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(g[0]=="C"){const c=+g[1],t=+g[2];cn(c,t);ops.push(`qml.CNOT(wires=[${c}, ${t}])`)}else{B[g[0]][0](+g[1]);ops.push(`${B[g[0]][1]}(wires=${g[1]})`)}draw()});
+ $("r3").onclick=()=>{rs();draw()};draw();
+};
+
+/* 4 Code explorer */
+S[4]=el=>{
+ const L=[["import pennylane as qml","Loads the library. Everyone writes qml for short."],["dev = qml.device('default.qubit', wires=2)","Creates a 2-qubit simulator. Swap it for real hardware later."],["@qml.qnode(dev)","Decorator: turns the next function into a quantum circuit that runs on dev."],["def bell():","A normal Python function. Quantum gates inside become the circuit."],["    qml.Hadamard(wires=0)","Puts qubit 0 into an equal superposition of 0 and 1."],["    qml.CNOT(wires=[0, 1])","Flips qubit 1 only if qubit 0 is 1. Together with H this entangles them."],["    return qml.probs(wires=[0, 1])","Measurement. Returns probabilities of 00, 01, 10, 11."],["print(bell())   # [0.5 0. 0. 0.5]","Result: only 00 and 11, each 50%. That is a Bell pair."]];
+ el.innerHTML=L.map((l,i)=>`<button class="cl" data-i="${i}">${l[0].replace(/&/g,"&amp;").replace(/</g,"&lt;")||" "}</button>`).join("")+`<p class="note" id="n4">Click a line to see what it does.</p><pre style="color:var(--fg)">0: ──H─╭●─┤ ╭Probs\n1: ────╰X─┤ ╰Probs</pre>`;
+ el.querySelectorAll(".cl").forEach(b=>b.onclick=()=>{el.querySelectorAll(".cl").forEach(x=>x.classList.remove("on"));b.classList.add("on");$("n4").textContent=L[b.dataset.i][1]});
+};
+
+/* curve helper */
+function curve(el,f,x0,x1,y0,y1,pre){
+ const W=420,H=200,X=x=>20+(x-x0)/(x1-x0)*(W-40),Y=y=>H-20-(y-y0)/(y1-y0)*(H-40);let d="";
+ for(let i=0;i<=120;i++){const x=x0+(x1-x0)*i/120;d+=(i?"L":"M")+X(x).toFixed(1)+","+Y(f(x)).toFixed(1)}
+ el.insertAdjacentHTML("afterbegin",`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cost curve"><line x1="20" y1="${Y(0)}" x2="${W-20}" y2="${Y(0)}" stroke="var(--ln)"/><path d="${d}" fill="none" stroke="var(--c2)" stroke-width="2.5"/><circle id="${pre}d" r="7" fill="var(--ac)"/></svg>`);
+ return x=>{const d=$(pre+"d");d.setAttribute("cx",X(x));d.setAttribute("cy",Y(f(x)))};
+}
+
+/* 5 Cost curve */
+S[5]=el=>{
+ el.innerHTML=`<label>θ = <b id="v5">0.00</b> rad</label><input type="range" id="t5" min="0" max="6.2832" step=".01" value="0"><p class="note" id="n5"></p>`;
+ const mv=curve(el,Math.cos,0,6.2832,-1.2,1.2,"c5");
+ $("t5").oninput=()=>{const t=+$("t5").value;mv(t);$("v5").textContent=t.toFixed(2);$("n5").innerHTML=`RX(θ) then measure Z: ⟨Z⟩ = cos θ = <b>${T(Math.cos(t),1000)+0}</b>. At θ = π the qubit is |1⟩ and ⟨Z⟩ = −1.`};$("t5").oninput();
+};
+
+/* optimizer helper */
+function optim(el,f,df,x0,x1,y0,y1,s,lr0,pre,unit){
+ el.innerHTML=`<label>Learning rate η = <b id="${pre}l">${lr0}</b></label><input type="range" id="${pre}r" min=".05" max="2.2" step=".05" value="${lr0}"><button id="${pre}s">Step</button><button id="${pre}a">Run 30 steps</button><button class="g" id="${pre}x">Reset</button><p class="note" id="${pre}n"></p>`;
+ const mv=curve(el,f,x0,x1,y0,y1,pre);let x=s,k=0,iv;
+ const show=()=>{mv(x);$(pre+"n").innerHTML=`Step ${k}: θ = ${T(x,1000)}, ${unit} = <b>${T(f(x),10000)}</b>`};
+ const st=()=>{x-=+$(pre+"r").value*df(x);k++;show()};
+ $(pre+"r").oninput=()=>$(pre+"l").textContent=$(pre+"r").value;$(pre+"s").onclick=st;
+ $(pre+"a").onclick=()=>{clearInterval(iv);let i=0;iv=setInterval(()=>{st();if(++i==30)clearInterval(iv)},120)};
+ $(pre+"x").onclick=()=>{clearInterval(iv);x=s;k=0;show()};show();
+}
+S[6]=el=>optim(el,Math.cos,t=>-Math.sin(t),0,6.2832,-1.2,1.2,1,.4,"o6","cost");
+S[8]=el=>optim(el,t=>-1.137+.5*(1-Math.cos(t-.22)),t=>.5*Math.sin(t-.22),-3.14,3.14,-1.25,.1,2,.8,"o8","energy (Ha)");
+
+/* 7 Grover */
+S[7]=el=>{
+ let a,m=5,n=0;const rs=()=>{a=Array(8).fill(Math.SQRT1_2/2);n=0};rs();
+ el.innerHTML=`<label>Marked item: <b id="mv">101</b></label><input type="range" id="mk" min="0" max="7" value="5"><svg viewBox="0 0 420 180" width="100%" role="img" aria-label="Amplitudes"><line x1="10" y1="90" x2="410" y2="90" stroke="var(--ln)"/><g id="gb"></g></svg><button id="o7">1. Oracle</button><button id="d7">2. Diffusion</button><button class="g" id="r7">Reset</button><p class="note" id="n7"></p>`;
+ const draw=()=>{$("gb").innerHTML=a.map((x,i)=>{const h=x*160,y=h>=0?90-h:90;return `<rect x="${24+i*50}" y="${y}" width="34" height="${Math.abs(h)}" rx="3" fill="${i==m?"var(--ac)":"var(--c2)"}" style="transition:all .5s"/><text x="${24+i*50}" y="172">${i.toString(2).padStart(3,"0")}</text>`}).join("");$("n7").textContent=`Iterations: ${n}. P(marked) = ${T(a[m]**2*100,10)}%. Best around 2 for N = 8.`};
+ $("mk").oninput=()=>{m=+$("mk").value;$("mv").textContent=m.toString(2).padStart(3,"0");rs();draw()};
+ $("o7").onclick=()=>{a[m]=-a[m];draw()};
+ $("d7").onclick=()=>{const mean=a.reduce((p,c)=>p+c)/8;a=a.map(x=>2*mean-x);n++;draw()};$("r7").onclick=()=>{rs();draw()};draw();
+};
+
+/* 9 checklist */
+S[9]=el=>{
+ const I=["Register at qhack.ai","Install PennyLane (pip install pennylane)","Finish Modules 1 to 4","Solve 3 PennyLane Codebook or challenge problems","Practise one optimization problem","Practise one chemistry problem","Pick teammates (or go solo) and agree a split","Set a reminder: 16 Oct, 7:30 PM IST"];
+ let st={};try{st=JSON.parse(localStorage.getItem("qh26")||"{}")}catch(e){}
+ el.innerHTML=I.map((t,i)=>`<label class="ck"><input type="checkbox" data-i="${i}" ${st[i]?"checked":""}><span>${t}</span></label>`).join("")+`<div class="pb"><i id="pg"></i></div><p class="note" id="n9"></p>`;
+ const up=()=>{const c=el.querySelectorAll("input:checked").length;$("pg").style.width=c/I.length*100+"%";$("n9").textContent=c+" of "+I.length+" done"+(c==I.length?". You are ready. Good luck!":".")};
+ el.querySelectorAll("input").forEach(c=>c.onchange=()=>{st[c.dataset.i]=c.checked;try{localStorage.setItem("qh26",JSON.stringify(st))}catch(e){}up()});up();
+};
+/* ===== Quiz ===== */
+S[10]=el=>{
+ const Q=[
+ ["Which state sits at the north pole of the Bloch sphere?",["|0⟩","|1⟩","|+⟩","|−⟩"],0,"The north pole is |0⟩ and the south pole is |1⟩."],
+ ["What does the Hadamard gate do to |0⟩?",["Flips it to |1⟩","Creates an equal superposition of |0⟩ and |1⟩","Does nothing","Measures the qubit"],1,"H turns |0⟩ into (|0⟩ + |1⟩)/√2, a point on the equator."],
+ ["According to the Born rule, the probability of an outcome equals…",["The amplitude","The square root of the amplitude","The squared magnitude of the amplitude","Twice the amplitude"],2,"Probability = |amplitude|²."],
+ ["After H on qubit 0 and CNOT(0,1), which outcomes can you measure?",["Only 00 and 11","Only 01 and 10","All four equally","Only 00"],0,"This is the Bell state (|00⟩ + |11⟩)/√2: the two qubits always agree."],
+ ["Which PennyLane decorator turns a Python function into a quantum circuit?",["@qml.device","@qml.qnode(dev)","@qml.circuit","@qml.run"],1,"@qml.qnode(dev) binds the function to a device."],
+ ["For RX(π) applied to |0⟩, what is ⟨Z⟩?",["+1","0","−1","π"],2,"RX(π) flips the qubit to |1⟩, so ⟨Z⟩ = cos π = −1."],
+ ["What is the parameter-shift rule used for?",["Measuring faster","Computing gradients of circuit outputs","Moving qubits between wires","Removing noise"],1,"It gives exact gradients by running the circuit at shifted parameter values."],
+ ["What usually happens when the learning rate is far too large?",["Fastest possible convergence","The optimizer overshoots and may bounce around or diverge","The gradient becomes zero","Nothing changes"],1,"Big steps jump over the minimum. Try it in Module 6."],
+ ["For Grover search over 8 items, about how many iterations are ideal?",["1","2","4","8"],1,"About (π/4)·√8 ≈ 2. Extra iterations rotate past the target and reduce the success rate."],
+ ["In VQE, what does the classical optimizer try to minimize?",["The number of qubits","The number of shots","The expectation value ⟨H⟩ of the Hamiltonian","The circuit depth only"],2,"The lowest ⟨H⟩ approximates the ground-state energy."],
+ ["When does the QHack 2026 coding challenge run?",["1–8 October 2026","16–23 October 2026","16–23 November 2026","16–23 October 2025"],1,"It starts on 16 October at 10:00 AM ET, which is 7:30 PM IST."],
+ ["Roughly how large is the QHack 2026 prize pool in rupees (at about ₹96.5 per US dollar)?",["About ₹6.5 lakh","About ₹65 lakh","About ₹6.5 crore","About ₹65,000"],1,"USD 67,000 × 96.5 ≈ ₹64.7 lakh. The exact value depends on the exchange rate."]];
+ let i=0,sc=0,done=0;
+ const show=()=>{
+  if(i>=Q.length){const p=Math.round(sc/Q.length*100);el.innerHTML=`<h3>Quiz complete</h3><p>Your score: <b>${sc} / ${Q.length}</b> (${p}%)</p><p class="note">${p>=80?"Excellent work. You are ready for the QHack challenges.":p>=50?"Good effort. Revise the modules you missed and try again.":"Keep going. Review Modules 1 to 4, then retake the quiz."}</p><button id="rq">Retake quiz</button>`;$("rq").onclick=()=>{i=sc=0;show()};return}
+  const q=Q[i];done=0;
+  el.innerHTML=`<div class="note" style="min-height:0">Question ${i+1} of ${Q.length} · Score ${sc}</div><div class="pb"><i style="width:${i/Q.length*100}%"></i></div><h3 style="font-size:17px;margin-bottom:8px">${q[0]}</h3>${q[1].map((o,k)=>`<button class="cl qo" data-k="${k}">${o}</button>`).join("")}<p class="note" id="qe"></p><button id="qn" hidden>Next question</button>`;
+  const bs=el.querySelectorAll(".qo");
+  bs.forEach(b=>b.onclick=()=>{if(done)return;done=1;const k=+b.dataset.k,ok=k==q[2];if(ok){sc++;b.classList.add("ok")}else{b.classList.add("no");bs[q[2]].classList.add("ok")}$("qe").textContent=(ok?"Correct. ":"Not quite. ")+q[3];$("qn").hidden=false;$("qn").textContent=i==Q.length-1?"See my score":"Next question"});
+  $("qn").onclick=()=>{i++;show()};
+ };show();
+};
+
+/* ===== Animated backgrounds ===== */
+const cv=document.createElement("canvas");cv.id="bg";document.body.prepend(cv);
+const c=cv.getContext("2d"),R=Math.random,TAU=6.2832,RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+let W=0,H=0,P=[],TH="dark",raf,lw=0;
+const mk=(n,f)=>Array.from({length:n},f);
+const INIT={
+ dark:()=>P=mk(70,()=>({x:R()*W,y:R()*H,vx:R()-.5,vy:R()-.5})),
+ hole:()=>P=mk(650,()=>({a:R()*TAU,r:R()})),
+ nova:()=>P=mk(320,()=>({l:0})),
+ aurora:()=>P=mk(70,()=>({x:R()*W,y:R()*H*.6,s:R()*1.5+.3})),
+ neon:()=>P=[],
+ ocean:()=>P=mk(90,()=>({x:R()*W,y:R()*H,r:2+R()*9,v:.2+R()*.7,p:R()*TAU})),
+ retro:()=>P=mk(50,()=>({x:R()*W,y:R()*H*.5,s:R()*1.5+.3})),
+ light:()=>P=mk(55,()=>({x:R()*W,y:R()*H,r:2+R()*7,v:.1+R()*.3,p:R()*TAU}))};
+const grid=(t,hz,a,b)=>{const x0=W/2;c.lineWidth=1.5;c.shadowBlur=8;for(let i=-14;i<=14;i++){c.strokeStyle=i%2?a:b;c.shadowColor=c.strokeStyle;c.globalAlpha=.5;c.beginPath();c.moveTo(x0,hz);c.lineTo(x0+i*W*.09,H);c.stroke()}for(let k=0;k<12;k++){const u=(k+(t*.4)%1)/12,y=hz+(H-hz)*u*u;c.strokeStyle=k%2?b:a;c.shadowColor=c.strokeStyle;c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}c.shadowBlur=0;c.globalAlpha=1};
+const DRAW={
+ dark:t=>{P.forEach(p=>{p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H});c.lineWidth=1;c.fillStyle="#6fe3ff";for(let i=0;i<P.length;i++){const a=P[i];c.globalAlpha=.7;c.fillRect(a.x,a.y,2,2);for(let j=i+1;j<P.length;j++){const b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<110){c.globalAlpha=.25*(1-d/110);c.strokeStyle="#ffcf5c";c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke()}}}c.globalAlpha=1},
+ hole:t=>{const x0=W/2,y0=H*.36,r0=Math.min(W,H)*.09,g=c.createRadialGradient(x0,y0,r0,x0,y0,r0*5);g.addColorStop(0,"rgba(255,160,50,.35)");g.addColorStop(1,"rgba(255,160,50,0)");c.fillStyle=g;c.fillRect(0,0,W,H);c.globalCompositeOperation="lighter";P.forEach(p=>{p.a+=.012/Math.pow(.3+p.r,1.5);const rr=r0*(1.3+p.r*3.4),s=Math.sin(p.a),x=x0+Math.cos(p.a)*rr,y=y0+s*rr*.26;if(s<0&&Math.abs(x-x0)<r0)return;const k=1-p.r;c.fillStyle=`hsla(${22+k*30},100%,${45+k*45}%,.8)`;c.fillRect(x,y,1+k*2,1+k*2)});c.globalCompositeOperation="source-over";c.beginPath();c.arc(x0,y0,r0,0,TAU);c.fillStyle="#000";c.fill();c.strokeStyle="rgba(255,210,140,.9)";c.lineWidth=2;c.stroke()},
+ nova:t=>{const x0=W/2,y0=H*.4,sp=Math.min(W,H)/160;c.globalCompositeOperation="lighter";P.forEach(p=>{if(p.l<=0){const a=R()*TAU,v=R()*sp;p.x=x0;p.y=y0;p.vx=Math.cos(a)*v;p.vy=Math.sin(a)*v;p.l=1}p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.vy*=.99;p.l-=.006;c.fillStyle=`hsla(${p.l*55},100%,${45+p.l*25}%,${p.l})`;c.beginPath();c.arc(p.x,p.y,1+p.l*2.5,0,TAU);c.fill()});const q=(t%5)/5;c.strokeStyle=`rgba(255,140,40,${.5*(1-q)})`;c.lineWidth=3;c.beginPath();c.arc(x0,y0,q*Math.max(W,H)*.6,0,TAU);c.stroke();c.globalCompositeOperation="source-over"},
+ aurora:t=>{c.fillStyle="#fff";P.forEach(p=>{c.globalAlpha=.4+.4*Math.sin(t*p.s+p.x);c.fillRect(p.x,p.y,1.5,1.5)});c.globalAlpha=1;[["93,255,176",.28],["63,224,208",.4],["120,255,200",.55]].forEach(([col,b],i)=>{const base=H*b,g=c.createLinearGradient(0,base-90,0,base+H*.35);g.addColorStop(0,`rgba(${col},0)`);g.addColorStop(.25,`rgba(${col},.45)`);g.addColorStop(1,`rgba(${col},0)`);c.fillStyle=g;c.beginPath();c.moveTo(0,H);for(let x=0;x<=W;x+=12)c.lineTo(x,base+Math.sin(x*.004+t*.5+i*2)*60+Math.sin(x*.013-t*.8)*20);c.lineTo(W,H);c.closePath();c.fill()})},
+ neon:t=>{const hz=H*.5,g=c.createLinearGradient(0,hz-90,0,hz);g.addColorStop(0,"rgba(255,61,242,0)");g.addColorStop(1,"rgba(255,61,242,.28)");c.fillStyle=g;c.fillRect(0,hz-90,W,90);grid(t,hz,"#ff3df2","#20f0ff")},
+ ocean:t=>{c.globalCompositeOperation="lighter";P.forEach((p,i)=>{p.y-=p.v;p.x+=Math.sin(t+p.p)*.3;if(p.y<-20){p.y=H+20;p.x=R()*W}const col=i%3?"74,216,255":"58,240,200",g=c.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2.5);g.addColorStop(0,`rgba(${col},.55)`);g.addColorStop(.4,`rgba(${col},.18)`);g.addColorStop(1,`rgba(${col},0)`);c.fillStyle=g;c.fillRect(p.x-p.r*3,p.y-p.r*3,p.r*6,p.r*6);c.strokeStyle=`rgba(${col},.5)`;c.lineWidth=1;c.beginPath();c.arc(p.x,p.y,p.r*.7,0,TAU);c.stroke()});c.globalCompositeOperation="source-over"},
+ retro:t=>{const x0=W/2,hz=H*.7,r=Math.min(W,H)*.3,y0=hz-r*.4;c.fillStyle="#fff";P.forEach(p=>{c.globalAlpha=.3+.4*Math.sin(t+p.x);c.fillRect(p.x,p.y,1.5,1.5)});c.globalAlpha=1;const g=c.createLinearGradient(0,y0-r,0,y0+r);g.addColorStop(0,"#ffd36b");g.addColorStop(.5,"#ff5fa0");g.addColorStop(1,"#8a3cff");c.fillStyle=g;c.beginPath();c.arc(x0,y0,r,0,TAU);c.fill();const gp=r*.15;for(let k=0;k<7;k++)c.clearRect(x0-r,y0+r*.05+k*gp+(t*8)%gp,2*r,1.5+k*1.4);c.clearRect(0,hz,W,H-hz);c.fillStyle="rgba(24,4,48,.88)";c.fillRect(0,hz,W,H-hz);grid(t,hz,"#ff6fa8","#ffa24d")},
+ light:t=>{P.forEach(p=>{p.y-=p.v;p.x+=Math.sin(t*.5+p.p)*.25;if(p.y<-10){p.y=H+10;p.x=R()*W}c.fillStyle="rgba(110,140,210,.16)";c.beginPath();c.arc(p.x,p.y,p.r,0,TAU);c.fill()})}};
+const rz=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;lw=innerWidth};
+const frame=ts=>{c.clearRect(0,0,W,H);c.globalCompositeOperation="source-over";c.globalAlpha=1;DRAW[TH](ts/1000);if(!RM)raf=requestAnimationFrame(frame)};
+addEventListener("resize",()=>{const ch=innerWidth!=lw;W=cv.width=innerWidth;H=cv.height=innerHeight;if(ch){lw=innerWidth;INIT[TH]()}if(RM)frame(0)});
+
+/* ===== Music (synthesized in the browser) ===== */
+let AC,MG,CL=[],cur=null;
+const G=v=>{const g=AC.createGain();g.gain.value=v;return g};
+const F=(t,f,q)=>{const x=AC.createBiquadFilter();x.type=t;x.frequency.value=f;if(q)x.Q.value=q;return x};
+const O=(t,f)=>{const o=AC.createOscillator();o.type=t;o.frequency.value=f;o.start();CL.push(()=>{try{o.stop()}catch(e){}});return o};
+const LF=(r,d,p)=>{const o=O("sine",r),g=G(d);o.connect(g);g.connect(p)};
+const NZ=b=>{const n=AC.sampleRate*3,bf=AC.createBuffer(1,n,AC.sampleRate),d=bf.getChannelData(0);let l=0;for(let i=0;i<n;i++){const w=Math.random()*2-1;if(b){l=(l+.02*w)/1.02;d[i]=l*3.5}else d[i]=w}const s=AC.createBufferSource();s.buffer=bf;s.loop=true;s.start();CL.push(()=>{try{s.stop()}catch(e){}});return s};
+const EV=(fn,ms)=>{const id=setInterval(fn,ms);CL.push(()=>clearInterval(id))};
+const RV=()=>{const r=G(1),d=AC.createDelay(1),fb=G(.45);d.delayTime.value=.32;r.connect(MG);r.connect(d);d.connect(fb);fb.connect(d);d.connect(MG);CL.push(()=>{r.disconnect();d.disconnect();fb.disconnect()});return r};
+const NT=(f,dur,v,ty,dest)=>{const o=AC.createOscillator(),g=G(0),t=AC.currentTime;o.type=ty||"sine";o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(dest);o.start(t);o.stop(t+dur+.1)};
+const TR={
+ rain:()=>{NZ().connect(F("highpass",900)).connect(G(.2)).connect(MG);NZ().connect(F("bandpass",450,.4)).connect(G(.15)).connect(MG);NZ(1).connect(F("lowpass",180)).connect(G(.35)).connect(MG);EV(()=>{if(Math.random()<.6)NT(1800+Math.random()*3500,.06,.025,"sine",MG)},120)},
+ piano:()=>{const rv=RV(),ch=[[261.6,329.6,392,523.3],[220,261.6,329.6,440],[174.6,220,261.6,349.2],[196,246.9,293.7,392]];let k=0;const p=()=>{const q=ch[Math.floor(k/4)%4];if(k%4==0)NT(q[0]/2,4,.18,"sine",rv);const f=q[Math.floor(Math.random()*4)]*(Math.random()<.3?2:1);NT(f,3.5,.16,"triangle",rv);NT(f*2,2,.03,"sine",rv);k++};p();EV(p,1300)},
+ focus:()=>{const l=O("sine",200),r=O("sine",210),pl=AC.createStereoPanner(),pr=AC.createStereoPanner();pl.pan.value=-1;pr.pan.value=1;l.connect(pl).connect(G(.12)).connect(MG);r.connect(pr).connect(G(.12)).connect(MG);NZ(1).connect(F("lowpass",400)).connect(G(.2)).connect(MG);O("sine",110).connect(G(.05)).connect(MG)},
+ deep:()=>{const f=F("lowpass",160);O("sawtooth",55).connect(f).connect(G(.18)).connect(MG);LF(.07,90,f.frequency);[[82.5,.1],[110,.07],[165,.03]].forEach(([fr,v],i)=>{const gg=G(v);O("sine",fr).connect(gg).connect(MG);LF(.05+i*.03,v*.6,gg.gain)});NZ(1).connect(F("lowpass",120)).connect(G(.15)).connect(MG)},
+ relax:()=>{const rv=RV();[130.8,164.8,196,246.9].forEach((fr,i)=>{const g=G(.05);O("triangle",fr).connect(F("lowpass",700)).connect(g).connect(MG);LF(.08+i*.02,.03,g.gain)});const w=G(.12);NZ(1).connect(F("lowpass",500)).connect(w).connect(MG);LF(.1,.1,w.gain);const pe=[523.3,587.3,659.3,784,880];EV(()=>NT(pe[Math.floor(Math.random()*5)],5,.07,"sine",rv),3500)}};
+const MT={rain:"Rain",piano:"Soft Piano",focus:"Concentration",deep:"Deep Mind",relax:"Relax"};
+const playM=k=>{CL.forEach(f=>f());CL=[];cur=null;if(k!="off"){AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(!MG){MG=AC.createGain();MG.gain.value=+$("vol").value;MG.connect(AC.destination)}AC.resume();TR[k]();cur=k}document.querySelectorAll("#ml button").forEach(b=>b.classList.toggle("on",b.dataset.m==(cur||"off")));$("mn").textContent=cur?"Now playing: "+MT[cur]+(cur=="focus"?". Use headphones for the best effect.":"."):"Music is off."};
+
+/* ===== Theme & music panel ===== */
+const TN={dark:"Quantum Space",hole:"Black Hole",nova:"Supernova",aurora:"Aurora",neon:"Cyberpunk Neon",ocean:"Deep Ocean",retro:"Sunset Retro",light:"Light Paper"};
+document.body.insertAdjacentHTML("beforeend",`<button id="fab" aria-expanded="false" aria-controls="pnl">🎨 Theme &amp; Music</button><div id="pnl" hidden><h3>Theme</h3><div id="tl">${Object.keys(TN).map(k=>`<button class="g" data-t="${k}">${TN[k]}</button>`).join("")}</div><h3>Music</h3><div id="ml">${Object.keys(MT).map(k=>`<button class="g" data-m="${k}">${MT[k]}</button>`).join("")}<button class="g on" data-m="off">Off</button></div><label>Volume <input type="range" id="vol" min="0" max=".6" step=".02" value=".3"></label><p class="note" id="mn">Music is off. Sounds are generated in your browser.</p></div>`);
+$("fab").onclick=()=>{const h=$("pnl").hidden;$("pnl").hidden=!h;$("fab").setAttribute("aria-expanded",h)};
+$("vol").oninput=()=>{if(MG)MG.gain.value=+$("vol").value};
+document.querySelectorAll("#ml button").forEach(b=>b.onclick=()=>playM(b.dataset.m));
+const setTheme=k=>{TH=k;document.documentElement.dataset.theme=k;try{localStorage.setItem("qh-theme",k)}catch(e){}cancelAnimationFrame(raf);rz();INIT[k]();frame(performance.now());document.querySelectorAll("#tl button").forEach(b=>b.classList.toggle("on",b.dataset.t==k))};
+document.querySelectorAll("#tl button").forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
+let st0="dark";try{st0=localStorage.getItem("qh-theme")||"dark"}catch(e){}
+if(!INIT[st0])st0="dark";setTheme(st0);
+for(let i=1;i<=10;i++)S[i]($("s"+i));
+
+</script></body></html>
